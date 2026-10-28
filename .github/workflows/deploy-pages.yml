@@ -25,7 +25,7 @@ jobs:
           cache: npm
       - run: npm ci
       - run: npx expo export --platform web
-      # Serve the app for deep links like /aerogrid/energy on refresh.
+      # Serve the app for deep links like /AEROGRID/energy on refresh.
       - run: cp dist/index.html dist/404.html
       - uses: actions/upload-pages-artifact@v4
         with:

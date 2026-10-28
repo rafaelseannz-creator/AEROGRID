@@ -2,7 +2,7 @@
 
 The control centre app for **AeroGrid**, a solid-state, non-compression air conditioner built on a hybrid electrocaloric / magnetocaloric system. No compressor, no refrigerant gas, near-silent.
 
-**Live app:** https://rafaelseannz-creator.github.io/aerogrid/ (redeploys automatically on every push to `main`)
+**Live app:** https://rafaelseannz-creator.github.io/AEROGRID/ (redeploys automatically on every push to `main`)
 
 The app lets you adjust temperature and airflow, track energy use and savings against a traditional split system, see how the four-phase cooling cycle works, and manage multiple units as zones.
 
