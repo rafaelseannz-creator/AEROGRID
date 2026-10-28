@@ -1,0 +1,126 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>AeroGrid Home</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&amp;family=Space+Grotesk:wght@500;600;700&amp;display=swap">
+<style>
+body{margin:0}
+a{color:#6FE3F0}a:hover{color:#A5EEF5}
+</style>
+</helmet>
+<div style="width: 390px; height: 844px; box-sizing: border-box; background: #0A0E13; color: #EEF3F8; font-family: Inter, system-ui, sans-serif; display: flex; flex-direction: column; overflow: hidden">
+  <main style="flex: 1; display: flex; flex-direction: column; gap: 14px; padding: 52px 20px 16px; min-height: 0">
+    <header style="display: flex; justify-content: space-between; align-items: center">
+      <div style="display: flex; flex-direction: column; gap: 2px">
+        <p style="margin: 0; font-size: 13px; color: #8C9BAD">Good afternoon, Josh</p>
+        <h1 style="margin: 0; font-family: 'Space Grotesk', sans-serif; font-size: 26px; font-weight: 600; letter-spacing: -0.02em">Desk Zone</h1>
+      </div>
+      <button aria-label="{{powerLabel}}" aria-pressed="{{powerOn}}" onClick="{{togglePower}}" style="width: 48px; height: 48px; border-radius: 24px; border: 1px solid #26313F; background: {{powerBg}}; color: {{powerFg}}; display: flex; align-items: center; justify-content: center; cursor: pointer; padding: 0">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 2v10"></path><path d="M18.4 6.6a9 9 0 1 1-12.8 0"></path></svg>
+      </button>
+    </header>
+
+    <section aria-label="Room temperature" style="background: #131A22; border: 1px solid #1E2733; border-radius: 24px; padding: 20px; display: flex; flex-direction: column; gap: 14px">
+      <div style="display: flex; justify-content: space-between; align-items: center">
+        <span style="font-size: 13px; color: #8C9BAD">Room now</span>
+        <span style="display: flex; align-items: center; gap: 6px; font-size: 12px; font-weight: 600; color: {{statusColor}}; background: #0F2A2E; padding: 5px 10px; border-radius: 999px"><span style="width: 6px; height: 6px; border-radius: 3px; background: {{statusColor}}"></span>{{statusText}}</span>
+      </div>
+      <div style="display: flex; align-items: flex-end; gap: 14px">
+        <span style="font-family: 'Space Grotesk', sans-serif; font-size: 76px; font-weight: 500; line-height: 0.9; letter-spacing: -0.04em">24.5°</span>
+        <div style="display: flex; flex-direction: column; gap: 2px; padding-bottom: 6px">
+          <span style="font-size: 13px; color: #8C9BAD">Target</span>
+          <span style="font-family: 'Space Grotesk', sans-serif; font-size: 22px; font-weight: 600; color: #6FE3F0">22.0°</span>
+        </div>
+      </div>
+      <p style="margin: 0; font-size: 13px; color: #B4C0CE">Reaching target in about 12 min · 38% humidity</p>
+      <div style="display: flex; flex-direction: column; gap: 8px">
+        <div style="display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 6px">
+          <span style="height: 6px; border-radius: 3px; background: #5A3A26"></span>
+          <span style="height: 6px; border-radius: 3px; background: #5A3A26"></span>
+          <span style="height: 6px; border-radius: 3px; background: #1F4E55"></span>
+          <span style="height: 6px; border-radius: 3px; background: #6FE3F0"></span>
+        </div>
+        <span style="font-size: 12px; color: #8C9BAD">Cycle phase 4 of 4 · <span style="color: #EEF3F8">Room heat absorption</span></span>
+      </div>
+    </section>
+
+    <section aria-label="Quick controls" style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px">
+      <a href="Climate.dc.html" style="text-decoration: none; color: #EEF3F8; background: #131A22; border: 1px solid #1E2733; border-radius: 18px; padding: 14px; display: flex; flex-direction: column; gap: 10px; min-height: 44px">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#6FE3F0" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 2v20"></path><path d="M2 12h20"></path><path d="m4.9 4.9 14.2 14.2"></path><path d="m19.1 4.9-14.2 14.2"></path></svg>
+        <span style="display: flex; flex-direction: column; gap: 1px"><span style="font-size: 12px; color: #8C9BAD">Mode</span><span style="font-size: 15px; font-weight: 600">Cool</span></span>
+      </a>
+      <a href="Climate.dc.html" style="text-decoration: none; color: #EEF3F8; background: #131A22; border: 1px solid #1E2733; border-radius: 18px; padding: 14px; display: flex; flex-direction: column; gap: 10px; min-height: 44px">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#6FE3F0" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9.6 4.6A2 2 0 1 1 11 8H2"></path><path d="M12.6 19.4A2 2 0 1 0 14 16H2"></path><path d="M17.5 8a2.5 2.5 0 1 1 2 4H2"></path></svg>
+        <span style="display: flex; flex-direction: column; gap: 1px"><span style="font-size: 12px; color: #8C9BAD">Airflow</span><span style="font-size: 15px; font-weight: 600">Auto · 3</span></span>
+      </a>
+      <a href="Energy.dc.html" style="text-decoration: none; color: #EEF3F8; background: #131A22; border: 1px solid #1E2733; border-radius: 18px; padding: 14px; display: flex; flex-direction: column; gap: 10px; min-height: 44px">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#6FE3F0" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10Z"></path><path d="M2 21c0-3 1.85-5.36 5.08-6"></path></svg>
+        <span style="display: flex; flex-direction: column; gap: 1px"><span style="font-size: 12px; color: #8C9BAD">Eco</span><span style="font-size: 15px; font-weight: 600">On</span></span>
+      </a>
+    </section>
+
+    <section aria-label="Today" style="background: #131A22; border: 1px solid #1E2733; border-radius: 20px; padding: 16px; display: flex; flex-direction: column; gap: 12px">
+      <div style="display: flex; justify-content: space-between; align-items: baseline">
+        <h2 style="margin: 0; font-size: 14px; font-weight: 600">Today</h2>
+        <span style="font-size: 12px; color: #8C9BAD">vs. typical split system</span>
+      </div>
+      <div style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px">
+        <div style="display: flex; flex-direction: column; gap: 2px"><span style="font-family: 'Space Grotesk', sans-serif; font-size: 22px; font-weight: 600">2.1<span style="font-size: 13px; color: #8C9BAD"> kWh</span></span><span style="font-size: 12px; color: #8C9BAD">Used</span></div>
+        <div style="display: flex; flex-direction: column; gap: 2px"><span style="font-family: 'Space Grotesk', sans-serif; font-size: 22px; font-weight: 600; color: #6FE3F0">$4.25</span><span style="font-size: 12px; color: #8C9BAD">Saved</span></div>
+        <div style="display: flex; flex-direction: column; gap: 2px"><span style="font-family: 'Space Grotesk', sans-serif; font-size: 22px; font-weight: 600">9.4<span style="font-size: 13px; color: #8C9BAD"> kg</span></span><span style="font-size: 12px; color: #8C9BAD">CO₂ avoided</span></div>
+      </div>
+    </section>
+
+    <section aria-label="Focus cooling" style="background: #131A22; border: 1px solid #1E2733; border-radius: 20px; padding: 16px; display: flex; align-items: center; gap: 14px">
+      <div style="flex: 1; display: flex; flex-direction: column; gap: 3px">
+        <h2 style="margin: 0; font-size: 14px; font-weight: 600">Focus cooling</h2>
+        <p style="margin: 0; font-size: 12px; line-height: 1.45; color: #8C9BAD">{{focusText}}</p>
+      </div>
+      <button aria-label="Focus cooling" aria-pressed="{{focusOn}}" onClick="{{toggleFocus}}" style="width: 52px; height: 32px; border-radius: 16px; border: none; padding: 3px; background: {{switchBg}}; display: flex; justify-content: {{knobSide}}; cursor: pointer; flex-shrink: 0">
+        <span style="width: 26px; height: 26px; border-radius: 13px; background: #EEF3F8"></span>
+      </button>
+    </section>
+  </main>
+
+  <nav aria-label="Main" style="display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); padding: 8px 8px 28px; background: #0F141B; border-top: 1px solid #1E2733">
+    <a href="Main.dc.html" aria-current="page" style="text-decoration: none; color: #6FE3F0; display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 6px 0; font-size: 11px; font-weight: 600"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 10.5 12 3l9 7.5V20a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"></path></svg>Home</a>
+    <a href="Climate.dc.html" style="text-decoration: none; color: #8C9BAD; display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 6px 0; font-size: 11px; font-weight: 500"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 14.76V3.5a2.5 2.5 0 0 0-5 0v11.26a4.5 4.5 0 1 0 5 0z"></path></svg>Climate</a>
+    <a href="Energy.dc.html" style="text-decoration: none; color: #8C9BAD; display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 6px 0; font-size: 11px; font-weight: 500"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M13 2 3 14h9l-1 8 10-12h-9l1-8z"></path></svg>Energy</a>
+    <a href="Cycle.dc.html" style="text-decoration: none; color: #8C9BAD; display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 6px 0; font-size: 11px; font-weight: 500"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a9 9 0 1 1-3-6.7L21 8"></path><path d="M21 3v5h-5"></path></svg>Cycle</a>
+    <a href="Devices.dc.html" style="text-decoration: none; color: #8C9BAD; display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 6px 0; font-size: 11px; font-weight: 500"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="7" height="7" rx="1.5"></rect><rect x="14" y="3" width="7" height="7" rx="1.5"></rect><rect x="3" y="14" width="7" height="7" rx="1.5"></rect><rect x="14" y="14" width="7" height="7" rx="1.5"></rect></svg>Devices</a>
+  </nav>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    this.state = { powerOn: true, focusOn: true };
+  }
+  renderVals() {
+    const { powerOn, focusOn } = this.state;
+    return {
+      powerOn: powerOn,
+      powerLabel: powerOn ? 'Turn AeroGrid off' : 'Turn AeroGrid on',
+      powerBg: powerOn ? '#6FE3F0' : '#131A22',
+      powerFg: powerOn ? '#071015' : '#8C9BAD',
+      statusColor: powerOn ? '#6FE3F0' : '#8C9BAD',
+      statusText: powerOn ? 'Cooling' : 'Standby',
+      togglePower: () => this.setState({ powerOn: !powerOn }),
+      focusOn: focusOn,
+      focusText: focusOn ? 'Only your desk is cooled. Living room and kitchen are off.' : 'Cooling all connected zones.',
+      switchBg: focusOn ? '#6FE3F0' : '#26313F',
+      knobSide: focusOn ? 'flex-end' : 'flex-start',
+      toggleFocus: () => this.setState({ focusOn: !focusOn })
+    };
+  }
+}
+</script>
+</body>
+</html>

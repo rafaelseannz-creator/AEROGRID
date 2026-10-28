@@ -1,0 +1,116 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>AeroGrid Devices and Zones</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&amp;family=Space+Grotesk:wght@500;600;700&amp;display=swap">
+<style>
+body{margin:0}
+a{color:#6FE3F0}a:hover{color:#A5EEF5}
+</style>
+</helmet>
+<div style="width: 390px; height: 844px; box-sizing: border-box; background: #0A0E13; color: #EEF3F8; font-family: Inter, system-ui, sans-serif; display: flex; flex-direction: column; overflow: hidden">
+  <main style="flex: 1; display: flex; flex-direction: column; gap: 14px; padding: 52px 20px 16px; min-height: 0">
+    <header style="display: flex; flex-direction: column; gap: 2px">
+      <p style="margin: 0; font-size: 13px; color: #8C9BAD">{{activeCount}} of 2 units running</p>
+      <h1 style="margin: 0; font-family: 'Space Grotesk', sans-serif; font-size: 26px; font-weight: 600; letter-spacing: -0.02em">Devices &amp; Zones</h1>
+    </header>
+
+    <ul aria-label="Your units" style="list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 10px">
+      <sc-for list="{{units}}" as="u" hint-placeholder-count="2">
+        <li style="background: #131A22; border: 1px solid #1E2733; border-radius: 20px; padding: 16px; display: flex; flex-direction: column; gap: 14px">
+          <div style="display: flex; align-items: center; gap: 12px">
+            <span style="width: 44px; height: 44px; border-radius: 14px; background: #1B2430; color: {{u.iconColor}}; display: flex; align-items: center; justify-content: center; flex-shrink: 0">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="12" rx="3"></rect><path d="M7 21h10"></path><path d="M7 9h10"></path><path d="M7 13h6"></path></svg>
+            </span>
+            <span style="flex: 1; display: flex; flex-direction: column; gap: 2px">
+              <span style="font-size: 15px; font-weight: 600">{{u.name}}</span>
+              <span style="font-size: 12px; color: #8C9BAD">{{u.room}}</span>
+            </span>
+            <button aria-label="{{u.aria}}" aria-pressed="{{u.on}}" onClick="{{u.toggle}}" style="width: 52px; height: 32px; border-radius: 16px; border: none; padding: 3px; background: {{u.switchBg}}; display: flex; justify-content: {{u.knobSide}}; cursor: pointer; flex-shrink: 0">
+              <span style="width: 26px; height: 26px; border-radius: 13px; background: #EEF3F8"></span>
+            </button>
+          </div>
+          <div style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; border-top: 1px solid #1E2733; padding-top: 12px">
+            <span style="display: flex; flex-direction: column; gap: 2px"><span style="font-size: 11px; color: #8C9BAD">Status</span><span style="font-size: 13px; font-weight: 600; color: {{u.statusColor}}">{{u.status}}</span></span>
+            <span style="display: flex; flex-direction: column; gap: 2px"><span style="font-size: 11px; color: #8C9BAD">Target</span><span style="font-size: 13px; font-weight: 600">{{u.target}}</span></span>
+            <span style="display: flex; flex-direction: column; gap: 2px"><span style="font-size: 11px; color: #8C9BAD">Today</span><span style="font-size: 13px; font-weight: 600">{{u.today}}</span></span>
+          </div>
+        </li>
+      </sc-for>
+    </ul>
+
+    <section aria-label="Whole-home sync" style="background: #131A22; border: 1px solid #1E2733; border-radius: 20px; padding: 16px; display: flex; align-items: center; gap: 14px">
+      <div style="flex: 1; display: flex; flex-direction: column; gap: 3px">
+        <h2 style="margin: 0; font-size: 14px; font-weight: 600">Whole-home sync</h2>
+        <p style="margin: 0; font-size: 12px; line-height: 1.45; color: #8C9BAD">Run every unit together as one larger system.</p>
+      </div>
+      <button aria-label="Whole-home sync" aria-pressed="{{syncOn}}" onClick="{{toggleSync}}" style="width: 52px; height: 32px; border-radius: 16px; border: none; padding: 3px; background: {{syncBg}}; display: flex; justify-content: {{syncSide}}; cursor: pointer; flex-shrink: 0">
+        <span style="width: 26px; height: 26px; border-radius: 13px; background: #EEF3F8"></span>
+      </button>
+    </section>
+
+    <button style="border: 1.5px dashed #33404F; background: transparent; border-radius: 20px; padding: 18px 16px; display: flex; align-items: center; gap: 12px; color: #EEF3F8; font-family: Inter, sans-serif; text-align: left; cursor: pointer">
+      <span style="width: 44px; height: 44px; border-radius: 22px; background: #6FE3F0; color: #071015; display: flex; align-items: center; justify-content: center; flex-shrink: 0">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14"></path><path d="M5 12h14"></path></svg>
+      </span>
+      <span style="display: flex; flex-direction: column; gap: 3px">
+        <span style="font-size: 15px; font-weight: 600">Add an AeroGrid unit</span>
+        <span style="font-size: 12px; line-height: 1.45; color: #8C9BAD">Pair over Bluetooth. No installation, no venting hose, rental-friendly.</span>
+      </span>
+    </button>
+  </main>
+
+  <nav aria-label="Main" style="display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); padding: 8px 8px 28px; background: #0F141B; border-top: 1px solid #1E2733">
+    <a href="Main.dc.html" style="text-decoration: none; color: #8C9BAD; display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 6px 0; font-size: 11px; font-weight: 500"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 10.5 12 3l9 7.5V20a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"></path></svg>Home</a>
+    <a href="Climate.dc.html" style="text-decoration: none; color: #8C9BAD; display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 6px 0; font-size: 11px; font-weight: 500"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 14.76V3.5a2.5 2.5 0 0 0-5 0v11.26a4.5 4.5 0 1 0 5 0z"></path></svg>Climate</a>
+    <a href="Energy.dc.html" style="text-decoration: none; color: #8C9BAD; display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 6px 0; font-size: 11px; font-weight: 500"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M13 2 3 14h9l-1 8 10-12h-9l1-8z"></path></svg>Energy</a>
+    <a href="Cycle.dc.html" style="text-decoration: none; color: #8C9BAD; display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 6px 0; font-size: 11px; font-weight: 500"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a9 9 0 1 1-3-6.7L21 8"></path><path d="M21 3v5h-5"></path></svg>Cycle</a>
+    <a href="Devices.dc.html" aria-current="page" style="text-decoration: none; color: #6FE3F0; display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 6px 0; font-size: 11px; font-weight: 600"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="7" height="7" rx="1.5"></rect><rect x="14" y="3" width="7" height="7" rx="1.5"></rect><rect x="3" y="14" width="7" height="7" rx="1.5"></rect><rect x="14" y="14" width="7" height="7" rx="1.5"></rect></svg>Devices</a>
+  </nav>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    this.state = { on: [true, false], syncOn: false };
+  }
+  renderVals() {
+    const { on, syncOn } = this.state;
+    const U = [
+      { name: 'Desk Unit', room: 'Study · beside desk', target: '22.0°', today: '2.1 kWh', running: 'Cooling', off: 'Off' },
+      { name: 'Bedroom Unit', room: 'Bedroom', target: '20.0°', today: '0.0 kWh', running: 'Cooling', off: 'Starts 21:00' }
+    ];
+    const units = U.map((u, i) => {
+      const isOn = on[i];
+      return {
+        name: u.name, room: u.room, target: u.target, today: u.today,
+        on: isOn,
+        aria: (isOn ? 'Turn off ' : 'Turn on ') + u.name,
+        status: isOn ? u.running : u.off,
+        statusColor: isOn ? '#6FE3F0' : '#B4C0CE',
+        iconColor: isOn ? '#6FE3F0' : '#8C9BAD',
+        switchBg: isOn ? '#6FE3F0' : '#26313F',
+        knobSide: isOn ? 'flex-end' : 'flex-start',
+        toggle: () => { const next = on.slice(); next[i] = !isOn; this.setState({ on: next }); }
+      };
+    });
+    return {
+      units: units,
+      activeCount: on.filter(Boolean).length,
+      syncOn: syncOn,
+      syncBg: syncOn ? '#6FE3F0' : '#26313F',
+      syncSide: syncOn ? 'flex-end' : 'flex-start',
+      toggleSync: () => this.setState({ syncOn: !syncOn })
+    };
+  }
+}
+</script>
+</body>
+</html>

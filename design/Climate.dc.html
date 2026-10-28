@@ -1,0 +1,118 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>AeroGrid Climate and Airflow</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&amp;family=Space+Grotesk:wght@500;600;700&amp;display=swap">
+<style>
+body{margin:0}
+a{color:#6FE3F0}a:hover{color:#A5EEF5}
+</style>
+</helmet>
+<div style="width: 390px; height: 844px; box-sizing: border-box; background: #0A0E13; color: #EEF3F8; font-family: Inter, system-ui, sans-serif; display: flex; flex-direction: column; overflow: hidden">
+  <main style="flex: 1; display: flex; flex-direction: column; gap: 14px; padding: 52px 20px 16px; min-height: 0">
+    <header style="display: flex; flex-direction: column; gap: 2px">
+      <p style="margin: 0; font-size: 13px; color: #8C9BAD">Desk Zone</p>
+      <h1 style="margin: 0; font-family: 'Space Grotesk', sans-serif; font-size: 26px; font-weight: 600; letter-spacing: -0.02em">Climate &amp; Airflow</h1>
+    </header>
+
+    <section aria-label="Target temperature" style="display: flex; align-items: center; justify-content: space-between; gap: 8px">
+      <button aria-label="Lower target temperature" onClick="{{down}}" style="width: 48px; height: 48px; border-radius: 24px; border: 1px solid #26313F; background: #131A22; color: #EEF3F8; font-size: 24px; line-height: 1; cursor: pointer; padding: 0">−</button>
+      <div style="position: relative; width: 220px; height: 220px">
+        <svg width="220" height="220" viewBox="0 0 240 240" role="img" aria-label="{{dialLabel}}">
+          <circle cx="120" cy="120" r="104" fill="none" stroke="#1B2430" stroke-width="14" stroke-linecap="round" stroke-dasharray="490.1 653.5" transform="rotate(135 120 120)"></circle>
+          <circle cx="120" cy="120" r="104" fill="none" stroke="#6FE3F0" stroke-width="14" stroke-linecap="round" stroke-dasharray="{{dash}}" transform="rotate(135 120 120)"></circle>
+        </svg>
+        <div style="position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px">
+          <span style="font-size: 12px; color: #8C9BAD">Target</span>
+          <span style="font-family: 'Space Grotesk', sans-serif; font-size: 58px; font-weight: 500; letter-spacing: -0.04em; line-height: 1">{{tempText}}</span>
+          <span style="font-size: 12px; color: #B4C0CE">Room 24.5°</span>
+        </div>
+      </div>
+      <button aria-label="Raise target temperature" onClick="{{up}}" style="width: 48px; height: 48px; border-radius: 24px; border: 1px solid #26313F; background: #131A22; color: #EEF3F8; font-size: 24px; line-height: 1; cursor: pointer; padding: 0">+</button>
+    </section>
+
+    <section aria-label="Mode" style="display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 6px; background: #131A22; border: 1px solid #1E2733; border-radius: 16px; padding: 4px">
+      <sc-for list="{{modes}}" as="m" hint-placeholder-count="4">
+        <button aria-pressed="{{m.selected}}" onClick="{{m.pick}}" style="height: 44px; border-radius: 12px; border: none; background: {{m.bg}}; color: {{m.fg}}; font-family: Inter, sans-serif; font-size: 14px; font-weight: 600; cursor: pointer">{{m.label}}</button>
+      </sc-for>
+    </section>
+
+    <section aria-label="Airflow" style="background: #131A22; border: 1px solid #1E2733; border-radius: 20px; padding: 16px; display: flex; flex-direction: column; gap: 14px">
+      <div style="display: flex; justify-content: space-between; align-items: baseline">
+        <h2 style="margin: 0; font-size: 14px; font-weight: 600">Fan speed</h2>
+        <span style="font-size: 12px; color: #8C9BAD">{{speedNote}}</span>
+      </div>
+      <div style="display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 6px">
+        <sc-for list="{{speeds}}" as="s" hint-placeholder-count="6">
+          <button aria-pressed="{{s.selected}}" aria-label="{{s.aria}}" onClick="{{s.pick}}" style="height: 44px; border-radius: 12px; border: 1px solid {{s.border}}; background: {{s.bg}}; color: {{s.fg}}; font-family: 'Space Grotesk', sans-serif; font-size: 14px; font-weight: 600; cursor: pointer">{{s.label}}</button>
+        </sc-for>
+      </div>
+      <div style="display: flex; justify-content: space-between; align-items: baseline">
+        <h2 style="margin: 0; font-size: 14px; font-weight: 600">Direction</h2>
+      </div>
+      <div style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6px">
+        <sc-for list="{{directions}}" as="d" hint-placeholder-count="3">
+          <button aria-pressed="{{d.selected}}" onClick="{{d.pick}}" style="height: 44px; border-radius: 12px; border: 1px solid {{d.border}}; background: {{d.bg}}; color: {{d.fg}}; font-family: Inter, sans-serif; font-size: 13px; font-weight: 600; cursor: pointer">{{d.label}}</button>
+        </sc-for>
+      </div>
+    </section>
+
+    <section aria-label="Schedule" style="background: #131A22; border: 1px solid #1E2733; border-radius: 20px; padding: 16px; display: flex; align-items: center; gap: 14px">
+      <div style="flex: 1; display: flex; flex-direction: column; gap: 3px">
+        <h2 style="margin: 0; font-size: 14px; font-weight: 600">Workday schedule</h2>
+        <p style="margin: 0; font-size: 12px; color: #8C9BAD">Mon, Tue, Wed · 9:00–17:00 · 22°</p>
+      </div>
+      <button aria-label="Workday schedule" aria-pressed="{{schedOn}}" onClick="{{toggleSched}}" style="width: 52px; height: 32px; border-radius: 16px; border: none; padding: 3px; background: {{schedBg}}; display: flex; justify-content: {{schedSide}}; cursor: pointer; flex-shrink: 0">
+        <span style="width: 26px; height: 26px; border-radius: 13px; background: #EEF3F8"></span>
+      </button>
+    </section>
+  </main>
+
+  <nav aria-label="Main" style="display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); padding: 8px 8px 28px; background: #0F141B; border-top: 1px solid #1E2733">
+    <a href="Main.dc.html" style="text-decoration: none; color: #8C9BAD; display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 6px 0; font-size: 11px; font-weight: 500"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 10.5 12 3l9 7.5V20a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"></path></svg>Home</a>
+    <a href="Climate.dc.html" aria-current="page" style="text-decoration: none; color: #6FE3F0; display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 6px 0; font-size: 11px; font-weight: 600"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 14.76V3.5a2.5 2.5 0 0 0-5 0v11.26a4.5 4.5 0 1 0 5 0z"></path></svg>Climate</a>
+    <a href="Energy.dc.html" style="text-decoration: none; color: #8C9BAD; display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 6px 0; font-size: 11px; font-weight: 500"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M13 2 3 14h9l-1 8 10-12h-9l1-8z"></path></svg>Energy</a>
+    <a href="Cycle.dc.html" style="text-decoration: none; color: #8C9BAD; display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 6px 0; font-size: 11px; font-weight: 500"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a9 9 0 1 1-3-6.7L21 8"></path><path d="M21 3v5h-5"></path></svg>Cycle</a>
+    <a href="Devices.dc.html" style="text-decoration: none; color: #8C9BAD; display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 6px 0; font-size: 11px; font-weight: 500"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="7" height="7" rx="1.5"></rect><rect x="14" y="3" width="7" height="7" rx="1.5"></rect><rect x="3" y="14" width="7" height="7" rx="1.5"></rect><rect x="14" y="14" width="7" height="7" rx="1.5"></rect></svg>Devices</a>
+  </nav>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    this.state = { temp: 22, mode: 'Cool', speed: 'A', dir: 'Desk', schedOn: true };
+  }
+  renderVals() {
+    const { temp, mode, speed, dir, schedOn } = this.state;
+    const ARC = 490.1, CIRC = 653.5, MIN = 16, MAX = 30;
+    const f = (temp - MIN) / (MAX - MIN);
+    const on = (sel) => ({ bg: sel ? '#6FE3F0' : '#131A22', fg: sel ? '#071015' : '#EEF3F8', border: sel ? '#6FE3F0' : '#26313F', selected: sel });
+    const pill = (sel) => ({ bg: sel ? '#6FE3F0' : 'transparent', fg: sel ? '#071015' : '#B4C0CE', selected: sel });
+    const speedNotes = { A: 'Auto · adjusts to room load', 1: 'Whisper', 2: 'Quiet', 3: 'Balanced', 4: 'Strong', 5: 'Max boost' };
+    return {
+      tempText: temp.toFixed(1) + '°',
+      dialLabel: 'Target ' + temp.toFixed(1) + ' degrees',
+      dash: (ARC * f).toFixed(1) + ' ' + CIRC,
+      down: () => this.setState({ temp: Math.max(MIN, temp - 0.5) }),
+      up: () => this.setState({ temp: Math.min(MAX, temp + 0.5) }),
+      modes: ['Cool', 'Dry', 'Eco', 'Focus'].map((m) => ({ label: m, ...pill(m === mode), pick: () => this.setState({ mode: m }) })),
+      speedNote: speedNotes[speed],
+      speeds: ['A', 1, 2, 3, 4, 5].map((s) => ({ label: s === 'A' ? 'Auto' : String(s), aria: s === 'A' ? 'Auto fan speed' : 'Fan speed ' + s, ...on(s === speed), pick: () => this.setState({ speed: s }) })),
+      directions: ['Desk', 'Sweep', 'Wide'].map((d) => ({ label: d, ...on(d === dir), pick: () => this.setState({ dir: d }) })),
+      schedOn: schedOn,
+      schedBg: schedOn ? '#6FE3F0' : '#26313F',
+      schedSide: schedOn ? 'flex-end' : 'flex-start',
+      toggleSched: () => this.setState({ schedOn: !schedOn })
+    };
+  }
+}
+</script>
+</body>
+</html>

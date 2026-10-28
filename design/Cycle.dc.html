@@ -1,0 +1,124 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>How AeroGrid Cools</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&amp;family=Space+Grotesk:wght@500;600;700&amp;display=swap">
+<style>
+body{margin:0}
+a{color:#6FE3F0}a:hover{color:#A5EEF5}
+</style>
+</helmet>
+<div style="width: 390px; height: 844px; box-sizing: border-box; background: #0A0E13; color: #EEF3F8; font-family: Inter, system-ui, sans-serif; display: flex; flex-direction: column; overflow: hidden">
+  <main style="flex: 1; display: flex; flex-direction: column; gap: 14px; padding: 52px 20px 16px; min-height: 0">
+    <header style="display: flex; justify-content: space-between; align-items: flex-end">
+      <div style="display: flex; flex-direction: column; gap: 2px">
+        <p style="margin: 0; font-size: 13px; color: #8C9BAD">Solid-state cooling</p>
+        <h1 style="margin: 0; font-family: 'Space Grotesk', sans-serif; font-size: 26px; font-weight: 600; letter-spacing: -0.02em">How AeroGrid cools</h1>
+      </div>
+      <button aria-pressed="{{playing}}" onClick="{{togglePlay}}" style="height: 40px; padding: 0 14px; border-radius: 12px; border: 1px solid #26313F; background: #131A22; color: #EEF3F8; font-family: Inter, sans-serif; font-size: 13px; font-weight: 600; cursor: pointer">{{playLabel}}</button>
+    </header>
+
+    <section aria-label="Live cycle" aria-live="polite" style="background: #131A22; border: 1px solid #1E2733; border-radius: 20px; padding: 16px; display: flex; flex-direction: column; gap: 12px">
+      <div style="display: flex; justify-content: space-between; align-items: center">
+        <span style="font-size: 12px; color: #8C9BAD">Live · phase {{num}} of 4</span>
+        <span style="font-size: 12px; font-weight: 600; color: {{accent}}">Field {{field}}</span>
+      </div>
+      <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px">
+        <div style="display: flex; flex-direction: column; gap: 2px">
+          <span style="font-family: 'Space Grotesk', sans-serif; font-size: 34px; font-weight: 500; letter-spacing: -0.03em; color: {{accent}}">{{plate}}</span>
+          <span style="font-size: 12px; color: #8C9BAD">Ceramic plate</span>
+        </div>
+        <div style="display: flex; flex-direction: column; gap: 2px">
+          <span style="font-family: 'Space Grotesk', sans-serif; font-size: 34px; font-weight: 500; letter-spacing: -0.03em">24.5°</span>
+          <span style="font-size: 12px; color: #8C9BAD">Room air</span>
+        </div>
+      </div>
+    </section>
+
+    <ol aria-label="The four phases" style="list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 6px">
+      <sc-for list="{{phases}}" as="p" hint-placeholder-count="4">
+        <li>
+          <button aria-current="{{p.current}}" onClick="{{p.pick}}" style="width: 100%; text-align: left; display: flex; gap: 12px; padding: 12px; border-radius: 16px; border: 1px solid {{p.border}}; background: {{p.bg}}; color: #EEF3F8; font-family: Inter, sans-serif; cursor: pointer">
+            <span style="width: 32px; height: 32px; flex-shrink: 0; border-radius: 16px; display: flex; align-items: center; justify-content: center; font-family: 'Space Grotesk', sans-serif; font-size: 14px; font-weight: 700; background: {{p.dotBg}}; color: {{p.dotFg}}">{{p.n}}</span>
+            <span style="display: flex; flex-direction: column; gap: 3px">
+              <span style="display: flex; align-items: center; gap: 8px"><span style="font-size: 14px; font-weight: 600">{{p.title}}</span><span style="font-size: 11px; font-weight: 600; color: {{p.tagColor}}">{{p.tag}}</span></span>
+              <span style="font-size: 12px; line-height: 1.45; color: #B4C0CE">{{p.body}}</span>
+            </span>
+          </button>
+        </li>
+      </sc-for>
+    </ol>
+
+    <section aria-label="Why it is different" style="display: flex; flex-wrap: wrap; gap: 8px">
+      <span style="font-size: 12px; font-weight: 500; padding: 8px 12px; border-radius: 999px; background: #131A22; border: 1px solid #1E2733">No compressor</span>
+      <span style="font-size: 12px; font-weight: 500; padding: 8px 12px; border-radius: 999px; background: #131A22; border: 1px solid #1E2733">No refrigerant gas</span>
+      <span style="font-size: 12px; font-weight: 500; padding: 8px 12px; border-radius: 999px; background: #131A22; border: 1px solid #1E2733">Near-silent</span>
+    </section>
+  </main>
+
+  <nav aria-label="Main" style="display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); padding: 8px 8px 28px; background: #0F141B; border-top: 1px solid #1E2733">
+    <a href="Main.dc.html" style="text-decoration: none; color: #8C9BAD; display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 6px 0; font-size: 11px; font-weight: 500"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 10.5 12 3l9 7.5V20a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"></path></svg>Home</a>
+    <a href="Climate.dc.html" style="text-decoration: none; color: #8C9BAD; display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 6px 0; font-size: 11px; font-weight: 500"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 14.76V3.5a2.5 2.5 0 0 0-5 0v11.26a4.5 4.5 0 1 0 5 0z"></path></svg>Climate</a>
+    <a href="Energy.dc.html" style="text-decoration: none; color: #8C9BAD; display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 6px 0; font-size: 11px; font-weight: 500"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M13 2 3 14h9l-1 8 10-12h-9l1-8z"></path></svg>Energy</a>
+    <a href="Cycle.dc.html" aria-current="page" style="text-decoration: none; color: #6FE3F0; display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 6px 0; font-size: 11px; font-weight: 600"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a9 9 0 1 1-3-6.7L21 8"></path><path d="M21 3v5h-5"></path></svg>Cycle</a>
+    <a href="Devices.dc.html" style="text-decoration: none; color: #8C9BAD; display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 6px 0; font-size: 11px; font-weight: 500"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="7" height="7" rx="1.5"></rect><rect x="14" y="3" width="7" height="7" rx="1.5"></rect><rect x="3" y="14" width="7" height="7" rx="1.5"></rect><rect x="14" y="14" width="7" height="7" rx="1.5"></rect></svg>Devices</a>
+  </nav>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    this.state = { phase: 3, playing: false };
+  }
+  componentWillUnmount() {
+    clearInterval(this.timer);
+  }
+  renderVals() {
+    const { phase, playing } = this.state;
+    const HEAT = '#FF9147', COOL = '#6FE3F0';
+    const P = [
+      { title: 'Electric field on', tag: 'HEAT', heat: true, field: 'ON', plate: '31.0°', body: 'High voltage aligns the ceramic’s dipoles, instantly heating the plate.' },
+      { title: 'Heat exhaust', tag: 'HEAT', heat: true, field: 'ON', plate: '27.5°', body: 'With the voltage still on, that heat is routed outside.' },
+      { title: 'Electric field off', tag: 'COOL', heat: false, field: 'OFF', plate: '13.8°', body: 'Voltage off: the dipoles scatter and the plate temperature plummets.' },
+      { title: 'Room heat absorption', tag: 'COOL', heat: false, field: 'OFF', plate: '18.6°', body: 'Warm room air passes over the chilled plates and returns cool and dry. Then it repeats.' }
+    ];
+    const cur = P[phase];
+    return {
+      num: phase + 1,
+      field: cur.field,
+      plate: cur.plate,
+      accent: cur.heat ? HEAT : COOL,
+      playing: playing,
+      playLabel: playing ? 'Pause' : 'Play cycle',
+      togglePlay: () => {
+        if (playing) { clearInterval(this.timer); this.setState({ playing: false }); return; }
+        this.timer = setInterval(() => this.setState({ phase: (this.state.phase + 1) % 4 }), 2200);
+        this.setState({ playing: true });
+      },
+      phases: P.map((p, i) => {
+        const on = i === phase;
+        const c = p.heat ? HEAT : COOL;
+        return {
+          n: i + 1, title: p.title, tag: p.tag, body: p.body,
+          current: on ? 'step' : 'false',
+          bg: on ? '#131A22' : 'transparent',
+          border: on ? '#26313F' : 'transparent',
+          dotBg: on ? c : '#1B2430',
+          dotFg: on ? '#071015' : c,
+          tagColor: c,
+          pick: () => this.setState({ phase: i })
+        };
+      })
+    };
+  }
+}
+</script>
+</body>
+</html>

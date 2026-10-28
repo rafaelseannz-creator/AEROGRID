@@ -1,0 +1,150 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>AeroGrid Energy and Savings</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&amp;family=Space+Grotesk:wght@500;600;700&amp;display=swap">
+<style>
+body{margin:0}
+a{color:#6FE3F0}a:hover{color:#A5EEF5}
+</style>
+</helmet>
+<div style="width: 390px; height: 844px; box-sizing: border-box; background: #0A0E13; color: #EEF3F8; font-family: Inter, system-ui, sans-serif; display: flex; flex-direction: column; overflow: hidden">
+  <main style="flex: 1; display: flex; flex-direction: column; gap: 14px; padding: 52px 20px 16px; min-height: 0">
+    <header style="display: flex; justify-content: space-between; align-items: flex-end">
+      <div style="display: flex; flex-direction: column; gap: 2px">
+        <p style="margin: 0; font-size: 13px; color: #8C9BAD">Last 7 days</p>
+        <h1 style="margin: 0; font-family: 'Space Grotesk', sans-serif; font-size: 26px; font-weight: 600; letter-spacing: -0.02em">Energy &amp; Savings</h1>
+      </div>
+    </header>
+
+    <section aria-label="Savings this week" style="display: flex; flex-direction: column; gap: 4px">
+      <span style="font-family: 'Space Grotesk', sans-serif; font-size: 52px; font-weight: 500; letter-spacing: -0.04em; line-height: 1">$24.32 <span style="font-size: 18px; font-weight: 500; letter-spacing: 0; color: #6FE3F0">saved</span></span>
+      <span style="font-size: 13px; color: #B4C0CE">73.7 kWh less than a typical split system running the same hours</span>
+    </section>
+
+    <section aria-label="Daily energy use" style="background: #131A22; border: 1px solid #1E2733; border-radius: 20px; padding: 16px; display: flex; flex-direction: column; gap: 12px">
+      <div style="display: flex; justify-content: space-between; align-items: center">
+        <h2 style="margin: 0; font-size: 14px; font-weight: 600">Daily energy use</h2>
+        <button aria-pressed="{{tableOn}}" onClick="{{toggleTable}}" style="height: 32px; padding: 0 12px; border-radius: 10px; border: 1px solid #26313F; background: transparent; color: #B4C0CE; font-family: Inter, sans-serif; font-size: 12px; font-weight: 600; cursor: pointer">{{tableLabel}}</button>
+      </div>
+      <div style="display: flex; gap: 14px; font-size: 12px; color: #B4C0CE">
+        <span style="display: flex; align-items: center; gap: 6px"><span style="width: 10px; height: 10px; border-radius: 3px; background: #1F9EAF"></span>AeroGrid</span>
+        <span style="display: flex; align-items: center; gap: 6px"><span style="width: 10px; height: 10px; border-radius: 3px; background: #D0763A"></span>Split system (est.)</span>
+      </div>
+
+      <sc-if value="{{chartOn}}" hint-placeholder-val="{{ true }}">
+        <div style="display: flex; flex-direction: column; gap: 10px">
+          <p aria-live="polite" style="margin: 0; font-size: 12px; color: #8C9BAD; min-height: 16px"><span style="color: #EEF3F8; font-weight: 600">{{sel.full}}</span> · AeroGrid {{sel.aero}} kWh · Split system {{sel.split}} kWh</p>
+          <div style="position: relative; height: 128px; display: flex; gap: 8px">
+            <div style="position: relative; width: 18px; font-size: 10px; line-height: 12px; color: #8C9BAD; text-align: right">
+              <span style="position: absolute; right: 0; bottom: 110px">20</span>
+              <span style="position: absolute; right: 0; bottom: 52px">10</span>
+              <span style="position: absolute; right: 0; bottom: -6px">0</span>
+            </div>
+            <div style="flex: 1; position: relative">
+              <div style="position: absolute; left: 0; right: 0; bottom: 116px; border-top: 1px solid #1E2733"></div>
+              <div style="position: absolute; left: 0; right: 0; bottom: 58px; border-top: 1px solid #1E2733"></div>
+              <div style="position: absolute; left: 0; right: 0; bottom: 0; border-top: 1px solid #3A4656"></div>
+              <div style="position: absolute; inset: 0; display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 4px">
+                <sc-for list="{{days}}" as="d" hint-placeholder-count="7">
+                  <button aria-label="{{d.aria}}" onClick="{{d.pick}}" onMouseEnter="{{d.pick}}" style="border: none; padding: 0 0 1px; border-radius: 8px; background: {{d.colBg}}; display: flex; align-items: flex-end; justify-content: center; gap: 2px; cursor: pointer">
+                    <span style="width: 11px; height: {{d.aeroH}}; background: #1F9EAF; border-radius: 4px 4px 0 0"></span>
+                    <span style="width: 11px; height: {{d.splitH}}; background: #D0763A; border-radius: 4px 4px 0 0"></span>
+                  </button>
+                </sc-for>
+              </div>
+            </div>
+          </div>
+          <div style="display: flex; gap: 8px">
+            <span style="width: 18px"></span>
+            <div style="flex: 1; display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 4px">
+              <sc-for list="{{days}}" as="d" hint-placeholder-count="7">
+                <span style="text-align: center; font-size: 11px; color: {{d.labelColor}}; font-weight: {{d.labelWeight}}">{{d.short}}</span>
+              </sc-for>
+            </div>
+          </div>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{tableOn}}" hint-placeholder-val="{{ false }}">
+        <table style="width: 100%; border-collapse: collapse; font-size: 12px">
+          <thead>
+            <tr style="color: #8C9BAD; text-align: right">
+              <th scope="col" style="text-align: left; font-weight: 500; padding: 4px 0">Day</th>
+              <th scope="col" style="font-weight: 500; padding: 4px 0">AeroGrid kWh</th>
+              <th scope="col" style="font-weight: 500; padding: 4px 0">Split kWh</th>
+            </tr>
+          </thead>
+          <tbody>
+            <sc-for list="{{days}}" as="d" hint-placeholder-count="7">
+              <tr style="border-top: 1px solid #1E2733; text-align: right">
+                <th scope="row" style="text-align: left; font-weight: 500; padding: 4px 0">{{d.full}}</th>
+                <td style="padding: 4px 0">{{d.aero}}</td>
+                <td style="padding: 4px 0">{{d.split}}</td>
+              </tr>
+            </sc-for>
+          </tbody>
+        </table>
+      </sc-if>
+    </section>
+
+    <section aria-label="Week totals" style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px">
+      <div style="background: #131A22; border: 1px solid #1E2733; border-radius: 16px; padding: 12px; display: flex; flex-direction: column; gap: 2px"><span style="font-family: 'Space Grotesk', sans-serif; font-size: 20px; font-weight: 600">13.7<span style="font-size: 12px; color: #8C9BAD"> kWh</span></span><span style="font-size: 12px; color: #8C9BAD">Used</span></div>
+      <div style="background: #131A22; border: 1px solid #1E2733; border-radius: 16px; padding: 12px; display: flex; flex-direction: column; gap: 2px"><span style="font-family: 'Space Grotesk', sans-serif; font-size: 20px; font-weight: 600">53.8<span style="font-size: 12px; color: #8C9BAD"> kg</span></span><span style="font-size: 12px; color: #8C9BAD">CO₂ avoided</span></div>
+      <div style="background: #131A22; border: 1px solid #1E2733; border-radius: 16px; padding: 12px; display: flex; flex-direction: column; gap: 2px"><span style="font-family: 'Space Grotesk', sans-serif; font-size: 20px; font-weight: 600">0<span style="font-size: 12px; color: #8C9BAD"> g</span></span><span style="font-size: 12px; color: #8C9BAD">Refrigerant gas</span></div>
+    </section>
+
+    <p style="margin: 0; font-size: 11px; line-height: 1.5; color: #8C9BAD">Estimates assume $0.33/kWh and a 2.5 kW split system. Change these in Settings.</p>
+  </main>
+
+  <nav aria-label="Main" style="display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); padding: 8px 8px 28px; background: #0F141B; border-top: 1px solid #1E2733">
+    <a href="Main.dc.html" style="text-decoration: none; color: #8C9BAD; display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 6px 0; font-size: 11px; font-weight: 500"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 10.5 12 3l9 7.5V20a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"></path></svg>Home</a>
+    <a href="Climate.dc.html" style="text-decoration: none; color: #8C9BAD; display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 6px 0; font-size: 11px; font-weight: 500"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 14.76V3.5a2.5 2.5 0 0 0-5 0v11.26a4.5 4.5 0 1 0 5 0z"></path></svg>Climate</a>
+    <a href="Energy.dc.html" aria-current="page" style="text-decoration: none; color: #6FE3F0; display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 6px 0; font-size: 11px; font-weight: 600"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M13 2 3 14h9l-1 8 10-12h-9l1-8z"></path></svg>Energy</a>
+    <a href="Cycle.dc.html" style="text-decoration: none; color: #8C9BAD; display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 6px 0; font-size: 11px; font-weight: 500"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a9 9 0 1 1-3-6.7L21 8"></path><path d="M21 3v5h-5"></path></svg>Cycle</a>
+    <a href="Devices.dc.html" style="text-decoration: none; color: #8C9BAD; display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 6px 0; font-size: 11px; font-weight: 500"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="7" height="7" rx="1.5"></rect><rect x="14" y="3" width="7" height="7" rx="1.5"></rect><rect x="3" y="14" width="7" height="7" rx="1.5"></rect><rect x="14" y="14" width="7" height="7" rx="1.5"></rect></svg>Devices</a>
+  </nav>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    this.state = { sel: 6, tableOn: false };
+  }
+  renderVals() {
+    const { sel, tableOn } = this.state;
+    const data = [
+      ['Wed', 'Wednesday', 2.4, 14.8], ['Thu', 'Thursday', 0.6, 4.1], ['Fri', 'Friday', 0.5, 3.6],
+      ['Sat', 'Saturday', 3.0, 18.5], ['Sun', 'Sunday', 2.8, 17.2], ['Mon', 'Monday', 2.3, 14.2], ['Tue', 'Today', 2.1, 15.0]
+    ];
+    const PX_PER_KWH = 5.8;
+    const days = data.map(([short, full, aero, split], i) => ({
+      short: short, full: full, aero: aero.toFixed(1), split: split.toFixed(1),
+      aria: full + ': AeroGrid ' + aero.toFixed(1) + ' kWh, split system ' + split.toFixed(1) + ' kWh',
+      aeroH: Math.max(3, aero * PX_PER_KWH).toFixed(1) + 'px',
+      splitH: Math.max(3, split * PX_PER_KWH).toFixed(1) + 'px',
+      colBg: i === sel ? '#1B2430' : 'transparent',
+      labelColor: i === sel ? '#EEF3F8' : '#8C9BAD',
+      labelWeight: i === sel ? '600' : '400',
+      pick: () => this.setState({ sel: i })
+    }));
+    return {
+      days: days,
+      sel: days[sel],
+      tableOn: tableOn,
+      chartOn: !tableOn,
+      tableLabel: tableOn ? 'Chart' : 'Table',
+      toggleTable: () => this.setState({ tableOn: !tableOn })
+    };
+  }
+}
+</script>
+</body>
+</html>
