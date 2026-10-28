@@ -14,6 +14,8 @@ The app lets you adjust temperature and airflow, track energy use and savings ag
 | **Cycle** | The four phases explained, with a live, animated phase readout |
 | **Devices** | Units and zones, on/off per unit, whole-home sync, add a unit |
 
+![AeroGrid app screens](design/screenshots.png)
+
 Designs live in [`design/`](design/) (Claude Design artboards, one `.dc.html` per screen).
 
 ## Tech stack
@@ -35,7 +37,8 @@ Scan the QR code with the **Expo Go** app on your phone (iOS or Android), or pre
 ```
 app/          screens and navigation (Expo Router)
 components/   shared UI components
-constants/    theme colours and app constants
+constants/    theme colours, fonts and radii
+lib/          app state, cooling-cycle phases and energy demo data
 assets/       icons, splash, fonts
 design/       screen designs
 ```
