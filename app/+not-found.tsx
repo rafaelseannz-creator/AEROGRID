@@ -6,7 +6,7 @@ import { colors, fonts } from '@/constants/theme';
 export default function NotFoundScreen() {
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>This screen doesn't exist.</Text>
+      <Text style={styles.title}>This screen does not exist.</Text>
       <Link href="/" style={styles.link}>
         Go to home screen
       </Link>

@@ -51,7 +51,7 @@ const initialState: AeroGridState = {
   phase: 3,
   cyclePlaying: false,
   units: [
-    { id: 'desk', name: 'Desk Unit', room: 'Study · beside desk', targetTemp: 22, todayKwh: 2.1, on: true, offLabel: 'Off' },
+    { id: 'desk', name: 'Desk Unit', room: 'Study · beside desk', targetTemp: 22, todayKwh: 2.9, on: true, offLabel: 'Off' },
     { id: 'bedroom', name: 'Bedroom Unit', room: 'Bedroom', targetTemp: 20, todayKwh: 0, on: false, offLabel: 'Starts 21:00' },
   ],
 };

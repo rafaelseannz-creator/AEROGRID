@@ -10,9 +10,9 @@ The app lets you adjust temperature and airflow, track energy use and savings ag
 
 | Tab | What it does |
 |---|---|
-| **Home** | Room vs target temperature, live cycle phase, quick controls, today's energy and savings, Focus cooling (desk zone only) |
+| **Home** | Room vs target temperature, live cycle phase, quick controls, today's energy and savings, 12-month savings trend, Focus cooling (desk zone only) |
 | **Climate** | Target temperature dial, modes (Cool / Dry / Eco / Focus), fan speed, airflow direction, workday schedule |
-| **Energy** | 7-day usage chart (AeroGrid vs split-system estimate), savings, CO₂ avoided, table view |
+| **Energy** | 12-month savings and payback time, money saved over time (line), monthly cooling cost vs a split system (line), 7-day usage (bars), energy by unit (donut), CO₂ avoided. Every chart has a table view |
 | **Cycle** | The four phases explained, with a live, animated phase readout |
 | **Devices** | Units and zones, on/off per unit, whole-home sync, add a unit |
 
@@ -47,4 +47,4 @@ design/       screen designs
 
 ## Data note
 
-Energy and savings figures in the app are demo data. They assume $0.33/kWh, a 2.5 kW split system for comparison, and Queensland grid emissions. Swap in real AeroGrid efficiency figures once they are measured.
+Energy and savings figures in the app are demo data, set in `lib/energy.ts`. They assume $0.36/kWh, a 3.5 kW split system for comparison (about 4,900 kWh a year, within the 3,500–5,000 kWh typical for Australian homes), AeroGrid using 14% of that energy, a $1,499 unit price and Queensland grid emissions. Swap in real AeroGrid efficiency figures once they are measured.

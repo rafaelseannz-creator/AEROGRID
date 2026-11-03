@@ -1,12 +1,13 @@
 import { Link } from 'expo-router';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 
+import { Sparkline } from '@/components/charts';
 import { Icon, type IconName } from '@/components/Icon';
 import { Card, Screen, SettingRow, styles as ui } from '@/components/ui';
 import { colors, fonts, radius } from '@/constants/theme';
 import { useAeroGrid } from '@/lib/aerogrid';
 import { CYCLE_PHASES } from '@/lib/cycle';
-import { WEEK, summarise } from '@/lib/energy';
+import { ASSUMPTIONS, MONTHS, WEEK, cumulativeSavings, money, summarise } from '@/lib/energy';
 
 function greeting() {
   const hour = new Date().getHours();
@@ -18,6 +19,9 @@ function greeting() {
 export default function HomeScreen() {
   const g = useAeroGrid();
   const today = summarise([WEEK[WEEK.length - 1]]);
+  const cumulative = cumulativeSavings(MONTHS);
+  const yearSaved = cumulative[cumulative.length - 1];
+  const paidOff = yearSaved >= ASSUMPTIONS.unitPrice;
   const phase = CYCLE_PHASES[g.phase];
   const statusColor = g.powerOn ? colors.cool : colors.textMuted;
 
@@ -99,6 +103,22 @@ export default function HomeScreen() {
         </View>
       </Card>
 
+      <Link href="/energy" asChild>
+        <Pressable
+          accessibilityRole="link"
+          accessibilityLabel={`Saved ${money(yearSaved)} in the last 12 months. View energy and savings.`}
+          style={styles.yearCard}>
+          <View style={ui.flex}>
+            <Text style={styles.label}>Saved in the last 12 months</Text>
+            <Text style={styles.yearValue}>{money(yearSaved)}</Text>
+            <Text style={styles.label}>
+              {paidOff ? 'Your Desk Unit has paid for itself' : `${money(ASSUMPTIONS.unitPrice - yearSaved)} to pay off your unit`}
+            </Text>
+          </View>
+          <Sparkline values={cumulative} color={colors.cool} />
+        </Pressable>
+      </Link>
+
       <SettingRow
         title="Focus cooling"
         body={g.focusOn ? 'Only your desk is cooled. Living room and kitchen are off.' : 'Cooling all connected zones.'}
@@ -169,4 +189,15 @@ const styles = StyleSheet.create({
   statRow: { flexDirection: 'row', gap: 8 },
   statValue: { fontFamily: fonts.displaySemiBold, fontSize: 22, color: colors.text },
   statUnit: { fontFamily: fonts.body, fontSize: 13, color: colors.textMuted },
+  yearCard: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 14,
+    padding: 16,
+    borderRadius: radius.lg,
+    borderWidth: 1,
+    borderColor: colors.border,
+    backgroundColor: colors.surface,
+  },
+  yearValue: { fontFamily: fonts.displaySemiBold, fontSize: 28, letterSpacing: -0.5, color: colors.cool, marginVertical: 2 },
 });

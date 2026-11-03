@@ -15,6 +15,8 @@ export const colors = {
   // Chart series, validated for colour-blind separation on the dark surface.
   seriesAeroGrid: '#1F9EAF',
   seriesSplit: '#D0763A',
+  seriesGold: '#B8962E',
+  seriesViolet: '#9273D9',
 };
 
 export const fonts = {
