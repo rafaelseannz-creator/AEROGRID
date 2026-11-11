@@ -1,0 +1,529 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<style>body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style>
+<title>How AeroGrid Cools</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Grotesk:wght@500;600;700&display=swap">
+<style>
+/* Layout: one cutaway figure carries the page; the four phase cards under it double as the controls; a temperature trace closes the loop. */
+:root {
+  color-scheme: dark;
+  --bg: #0A0E13;
+  --surface: #131A22;
+  --raised: #1B2430;
+  --duct: #0B1016;
+  --line: #26313F;
+  --line-strong: #3A4656;
+  --text: #EEF3F8;
+  --text-2: #B4C0CE;
+  --muted: #8C9BAD;
+  --cool: #6FE3F0;
+  --cool-ink: #071015;
+  --heat: #FF9147;
+  --field: #B7A3FF;
+  --room-air: #C8B79E;
+  --display: 'Space Grotesk', 'Avenir Next', 'Segoe UI', sans-serif;
+  --body: Inter, system-ui, -apple-system, 'Segoe UI', sans-serif;
+}
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--body);
+  font-size: 15px;
+  line-height: 1.55;
+}
+.page {
+  max-width: 1040px;
+  margin: 0 auto;
+  padding-block: 40px 56px;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+}
+header { display: flex; flex-direction: column; gap: 8px; }
+.eyebrow { margin: 0; font-size: 13px; color: var(--muted); letter-spacing: 0.06em; text-transform: uppercase; }
+h1 { margin: 0; font-family: var(--display); font-weight: 600; font-size: clamp(30px, 5vw, 44px); line-height: 1.08; letter-spacing: -0.02em; text-wrap: balance; }
+.lede { margin: 0; max-width: 64ch; color: var(--text-2); font-size: 16px; }
+h2 { margin: 0; font-family: var(--display); font-weight: 600; font-size: 20px; letter-spacing: -0.01em; }
+
+figure { margin: 0; display: flex; flex-direction: column; gap: 12px; }
+.fig-frame { background: var(--surface); border: 1px solid var(--line); border-radius: 20px; overflow: hidden; }
+.fig-scroll { overflow-x: auto; }
+.fig-scroll svg { display: block; width: 100%; min-width: 720px; height: auto; }
+figcaption { color: var(--muted); font-size: 13px; max-width: 80ch; }
+.swipe { display: none; }
+@media (max-width: 760px) { .swipe { display: inline; } }
+
+/* SVG text and marks */
+svg text { font-family: var(--body); font-size: 12.5px; fill: var(--text-2); }
+svg .t-zone { font-family: var(--display); font-weight: 600; font-size: 13px; letter-spacing: 0.08em; fill: var(--muted); }
+svg .t-strong { fill: var(--text); font-weight: 600; }
+svg .t-muted { fill: var(--muted); }
+svg .t-small { font-size: 11.5px; }
+svg .wall { stroke: var(--line-strong); stroke-width: 2; fill: none; stroke-linecap: round; }
+svg .hair { stroke: var(--line-strong); stroke-width: 1; fill: none; }
+
+.controls { display: flex; align-items: center; gap: 14px; padding: 12px 16px; border-top: 1px solid var(--line); flex-wrap: wrap; }
+.play {
+  min-width: 96px; height: 44px; padding: 0 18px; border-radius: 12px; border: none; cursor: pointer;
+  background: var(--cool); color: var(--cool-ink); font-family: var(--body); font-weight: 600; font-size: 14px;
+}
+.scrub { flex: 1 1 220px; min-width: 0; display: flex; align-items: center; gap: 10px; color: var(--muted); font-size: 12px; }
+.scrub input { flex: 1; min-width: 0; height: 44px; accent-color: var(--cool); cursor: pointer; }
+button:focus-visible, input:focus-visible { outline: 2px solid var(--cool); outline-offset: 2px; }
+
+.chips { display: flex; flex-wrap: wrap; gap: 8px; padding: 0 16px 16px; }
+.chip { display: flex; align-items: baseline; gap: 6px; padding: 7px 12px; border-radius: 999px; background: var(--raised); font-size: 12.5px; color: var(--muted); }
+.chip b { font-weight: 600; color: var(--text); font-variant-numeric: tabular-nums; }
+
+.phases { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; }
+.phase {
+  position: relative; width: 100%; height: 100%; text-align: left; cursor: pointer; overflow: hidden;
+  display: flex; flex-direction: column; gap: 10px; padding: 16px;
+  background: transparent; border: 1px solid var(--line); border-radius: 16px;
+  color: var(--text); font-family: var(--body); font-size: 14px; line-height: 1.5;
+}
+.phase[aria-current="step"] { background: var(--surface); border-color: var(--line-strong); }
+.phase-head { display: flex; align-items: center; gap: 10px; }
+.num {
+  width: 30px; height: 30px; flex-shrink: 0; border-radius: 15px; display: flex; align-items: center; justify-content: center;
+  font-family: var(--display); font-weight: 700; font-size: 14px; background: var(--raised); color: var(--kind);
+}
+.phase[aria-current="step"] .num { background: var(--kind); color: var(--cool-ink); }
+.phase-title { font-weight: 600; font-size: 15px; line-height: 1.25; }
+.tag { font-size: 11px; font-weight: 600; letter-spacing: 0.06em; color: var(--kind); }
+.phase p { margin: 0; color: var(--text-2); font-size: 13.5px; }
+.facts { margin: 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 4px; font-size: 12.5px; color: var(--muted); }
+.facts b { color: var(--text); font-weight: 600; }
+.bar { position: absolute; left: 0; bottom: 0; height: 3px; width: 0; background: var(--kind); }
+.heat { --kind: var(--heat); }
+.cool { --kind: var(--cool); }
+
+.parts { margin: 0; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px 32px; }
+.parts div { min-width: 0; }
+.parts dt { font-weight: 600; font-size: 14px; }
+.parts dd { margin: 2px 0 0; color: var(--text-2); font-size: 13.5px; }
+.note { margin: 0; color: var(--muted); font-size: 12.5px; max-width: 80ch; }
+section { display: flex; flex-direction: column; gap: 14px; }
+
+@media (max-width: 860px) { .phases { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 520px) {
+  .phases, .parts { grid-template-columns: minmax(0, 1fr); }
+  .page { padding-block: 24px 40px; gap: 24px; }
+}
+</style>
+
+</head>
+<body>
+<div class="page">
+  <header>
+    <p class="eyebrow">AeroGrid · solid-state cooling</p>
+    <h1>How AeroGrid cools a room without a compressor</h1>
+    <p class="lede">A ceramic plate heats up when an electric field lines up its atomic dipoles, and turns cold when the field is switched off. AeroGrid throws the heat outside and keeps the cold. Press play to follow one full cycle.</p>
+  </header>
+
+  <figure>
+    <div class="fig-frame">
+      <div class="fig-scroll">
+        <svg id="unit" viewBox="0 0 960 460" role="img" aria-label="Cutaway of an AeroGrid unit. A fan pushes room air along a duct over an electrocaloric ceramic plate. A diverter valve sends the air either outside through a window vent strip or back into the room.">
+          <defs>
+            <marker id="mk-room" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 10 5 0 10z" fill="#C8B79E"></path></marker>
+            <marker id="mk-cool" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 10 5 0 10z" fill="#6FE3F0"></path></marker>
+            <marker id="mk-heat" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 10 5 0 10z" fill="#FF9147"></path></marker>
+          </defs>
+
+          <!-- zones -->
+          <text class="t-zone" x="24" y="36">YOUR ROOM</text>
+          <text class="t-zone" x="936" y="36" text-anchor="end">OUTSIDE</text>
+
+          <!-- window wall with a gap for the vent strip -->
+          <rect x="800" y="0" width="12" height="140" fill="#26313F"></rect>
+          <rect x="800" y="200" width="12" height="260" fill="#26313F"></rect>
+          <text class="t-muted t-small" x="822" y="224">Window, open a crack</text>
+
+          <!-- shell -->
+          <rect x="200" y="50" width="560" height="380" rx="22" fill="#131A22" stroke="#3A4656" stroke-width="2"></rect>
+          <text class="t-muted t-small" x="222" y="414">Carbon fibre shell</text>
+
+          <!-- duct interiors -->
+          <rect x="196" y="70" width="504" height="50" fill="#0B1016"></rect>
+          <rect x="640" y="118" width="60" height="24" fill="#0B1016"></rect>
+          <rect x="196" y="140" width="640" height="60" fill="#0B1016"></rect>
+          <!-- duct walls -->
+          <path class="wall" d="M200 70H700V140H836"></path>
+          <path class="wall" d="M200 120H640V140H200"></path>
+          <path class="wall" d="M200 200H836"></path>
+          <rect x="200" y="121" width="439" height="18" fill="#1B2430"></rect>
+
+          <!-- room and outside arrows -->
+          <text x="24" y="142">Warm room air in</text>
+          <line x1="28" y1="176" x2="186" y2="176" stroke="#C8B79E" stroke-width="2" marker-end="url(#mk-room)"></line>
+          <text x="24" y="64">Cool, dry air out</text>
+          <line id="arrow-cool" x1="186" y1="102" x2="30" y2="102" stroke="#6FE3F0" stroke-width="2" marker-end="url(#mk-cool)"></line>
+          <text x="936" y="112" text-anchor="end">Hot air out</text>
+          <line id="arrow-hot" x1="846" y1="176" x2="932" y2="176" stroke="#FF9147" stroke-width="2" marker-end="url(#mk-heat)"></line>
+          <text class="t-small" x="822" y="130">Slim vent strip*</text>
+
+          <!-- fan -->
+          <circle cx="270" cy="170" r="22" fill="#131A22" stroke="#3A4656" stroke-width="1.5"></circle>
+          <g id="fan" transform="rotate(0 270 170)">
+            <path d="M270 170 262 152a9 9 0 0 1 16 0z" fill="#8C9BAD"></path>
+            <path d="M270 170 262 152a9 9 0 0 1 16 0z" fill="#8C9BAD" transform="rotate(120 270 170)"></path>
+            <path d="M270 170 262 152a9 9 0 0 1 16 0z" fill="#8C9BAD" transform="rotate(240 270 170)"></path>
+          </g>
+          <circle cx="270" cy="170" r="3.5" fill="#EEF3F8"></circle>
+          <text class="t-small" x="270" y="216" text-anchor="middle">Fan</text>
+
+          <!-- air particles and heat arrows are added here by the page script -->
+          <g id="air"></g>
+          <g id="heat-arrows"></g>
+          <text id="heat-label" class="t-small" x="590" y="184" fill="#FF9147" style="fill:#FF9147">heat</text>
+
+          <!-- diverter valve -->
+          <line id="flap" x1="700" y1="140" x2="640" y2="140" stroke="#EEF3F8" stroke-width="4" stroke-linecap="round"></line>
+          <circle cx="700" cy="140" r="5" fill="#EEF3F8"></circle>
+          <text class="t-small" x="710" y="100">Diverter</text>
+          <text class="t-small" x="710" y="115">valve</text>
+
+          <!-- plate stack -->
+          <rect id="el-top" x="340" y="200" width="240" height="7" rx="2" fill="#8C9BAD"></rect>
+          <rect id="ceramic" x="340" y="207" width="240" height="62" fill="#2A3644"></rect>
+          <g id="field-lines"></g>
+          <g id="dipoles"></g>
+          <rect id="el-bot" x="340" y="269" width="240" height="7" rx="2" fill="#8C9BAD"></rect>
+          <rect id="mc-layer" x="340" y="282" width="240" height="28" rx="3" fill="#2A3644" stroke="#3A4656" stroke-width="1"></rect>
+          <g id="moments"></g>
+          <g id="magnet" transform="translate(0 56)">
+            <rect x="360" y="316" width="100" height="30" rx="4" fill="#5B6B80"></rect>
+            <rect x="460" y="316" width="100" height="30" rx="4" fill="#3A4656"></rect>
+            <text x="410" y="336" text-anchor="middle" class="t-strong t-small">N</text>
+            <text x="510" y="336" text-anchor="middle" class="t-strong t-small">S</text>
+            <text class="t-small" x="596" y="336">Sliding magnet*</text>
+          </g>
+
+          <!-- labels for the stack -->
+          <path class="hair" d="M583 203.5 592 211"></path>
+          <text class="t-small" x="596" y="216">Electrode +</text>
+          <text class="t-strong" x="596" y="239">Electrocaloric ceramic</text>
+          <text class="t-muted t-small" x="596" y="254">arrows = atomic dipoles</text>
+          <path class="hair" d="M583 272.5H592"></path>
+          <text class="t-small" x="596" y="276">Electrode −</text>
+          <text class="t-small" x="596" y="300">Magnetocaloric layer*</text>
+
+          <!-- high-voltage driver and wires -->
+          <path id="wire-pos" d="M290 300V203.5H340" fill="none" stroke="#8C9BAD" stroke-width="2"></path>
+          <path id="wire-neg" d="M318 332H329V272.5H340" fill="none" stroke="#8C9BAD" stroke-width="2"></path>
+          <rect x="222" y="300" width="96" height="64" rx="10" fill="#1B2430" stroke="#3A4656" stroke-width="1.5"></rect>
+          <text class="t-small" x="270" y="326" text-anchor="middle">High-voltage</text>
+          <text class="t-small" x="270" y="341" text-anchor="middle">driver</text>
+          <text id="field-state" class="t-strong t-small" x="270" y="356" text-anchor="middle">Field OFF</text>
+        </svg>
+      </div>
+      <div class="controls">
+        <button class="play" id="play" type="button">Pause</button>
+        <label class="scrub" for="scrub">Cycle
+          <input id="scrub" type="range" min="0" max="12" step="0.01" value="0" aria-label="Position in the cooling cycle">
+        </label>
+      </div>
+      <div class="chips" aria-hidden="true">
+        <span class="chip">Electric field <b id="c-field">OFF</b></span>
+        <span class="chip">Dipoles <b id="c-dipoles">Scattered</b></span>
+        <span class="chip">Magnet <b id="c-magnet">Parked</b></span>
+        <span class="chip">Fan <b id="c-fan">Off</b></span>
+        <span class="chip">Air goes to <b id="c-valve">Room</b></span>
+        <span class="chip">Plate <b id="c-temp">24.5°C</b></span>
+      </div>
+    </div>
+    <figcaption>Cutaway of one AeroGrid unit, seen from the side. One fan moves room air over the ceramic plate. The diverter valve decides where that air goes next: outside while the plate is hot, back into the room while the plate is cold.<span class="swipe"> Swipe the diagram sideways to see the whole unit.</span></figcaption>
+  </figure>
+
+  <section aria-labelledby="phases-h">
+    <h2 id="phases-h">The four phases</h2>
+    <ol class="phases">
+      <li><button type="button" class="phase heat" data-phase="0">
+        <span class="phase-head"><span class="num">1</span><span><span class="phase-title">Electric field on</span><br><span class="tag">HEATING UP</span></span></span>
+        <p>High voltage across the electrodes forces the dipoles in the ceramic to line up. Lining up removes disorder, and that energy shows up as heat, so the plate warms almost instantly.</p>
+        <ul class="facts"><li>Field <b>ON</b></li><li>Fan <b>off</b>, valve swings to outside</li><li>Plate <b>24 → 31°C</b></li></ul>
+        <span class="bar"></span>
+      </button></li>
+      <li><button type="button" class="phase heat" data-phase="1">
+        <span class="phase-head"><span class="num">2</span><span><span class="phase-title">Heat exhaust</span><br><span class="tag">DUMPING HEAT OUTSIDE</span></span></span>
+        <p>The field stays on, so the dipoles stay aligned. The fan pushes air over the hot plate and the valve sends it out through the window vent strip. The plate cools back to about room temperature.</p>
+        <ul class="facts"><li>Field <b>ON</b></li><li>Fan <b>on</b>, air goes outside</li><li>Plate <b>31 → 25°C</b></li></ul>
+        <span class="bar"></span>
+      </button></li>
+      <li><button type="button" class="phase cool" data-phase="2">
+        <span class="phase-head"><span class="num">3</span><span><span class="phase-title">Electric field off</span><br><span class="tag">THE DEEP CHILL</span></span></span>
+        <p>The voltage is cut. The dipoles scatter in random directions, and they take the energy to do it from the plate itself, so its temperature plummets well below the room's.</p>
+        <ul class="facts"><li>Field <b>OFF</b></li><li>Fan <b>off</b>, valve swings to room</li><li>Plate <b>25 → 14°C</b></li></ul>
+        <span class="bar"></span>
+      </button></li>
+      <li><button type="button" class="phase cool" data-phase="3">
+        <span class="phase-head"><span class="num">4</span><span><span class="phase-title">Room heat absorption</span><br><span class="tag">ROOM COOLING</span></span></span>
+        <p>Warm room air crosses the chilled plate, gives up its heat, and returns to the room cool and dry. Once the plate is back at room temperature, the cycle repeats from phase 1.</p>
+        <ul class="facts"><li>Field <b>OFF</b></li><li>Fan <b>on</b>, air returns to room</li><li>Plate <b>14 → 24°C</b></li></ul>
+        <span class="bar"></span>
+      </button></li>
+    </ol>
+  </section>
+
+  <figure>
+    <div class="fig-frame">
+      <div class="fig-scroll">
+        <svg id="trace" viewBox="0 0 960 250" role="img" aria-label="Plate temperature over one cycle. It jumps to 31 degrees when the field switches on, falls to room temperature as heat is exhausted, drops to 14 degrees when the field switches off, then climbs back to room temperature as it absorbs heat from the room.">
+          <g id="bands"></g>
+          <g id="grid"></g>
+          <line x1="70" y1="99.4" x2="930" y2="99.4" stroke="#8C9BAD" stroke-width="1" stroke-dasharray="4 4"></line>
+          <text class="t-small" x="356" y="115" text-anchor="middle">Room air 24.5°C</text>
+          <g id="curve"></g>
+          <text class="t-muted t-small" x="62" y="227" text-anchor="end">Field</text>
+          <polyline id="field-trace" fill="none" stroke="#B7A3FF" stroke-width="2" stroke-linejoin="round" points=""></polyline>
+          <text class="t-small" x="356" y="208" text-anchor="middle" style="fill:#B7A3FF">ON</text>
+          <text class="t-small" x="786" y="226" text-anchor="middle" style="fill:#B7A3FF">OFF</text>
+          <line id="cursor" x1="70" y1="14" x2="70" y2="238" stroke="#EEF3F8" stroke-width="1" opacity="0.5"></line>
+          <circle id="dot" cx="70" cy="100" r="6" fill="#EEF3F8" stroke="#131A22" stroke-width="2"></circle>
+          <text id="dot-label" class="t-strong" x="82" y="90">24.5°C</text>
+        </svg>
+      </div>
+    </div>
+    <figcaption>Plate temperature across one cycle, with the electric field underneath. The plate is hotter than the room only while its heat is being sent outside, and colder than the room only while room air is passing over it.</figcaption>
+  </figure>
+
+  <section aria-labelledby="parts-h">
+    <h2 id="parts-h">What each part does</h2>
+    <dl class="parts">
+      <div><dt>Electrocaloric ceramic plate</dt><dd>The working material. It replaces the chemical refrigerant: it heats when its dipoles align and cools when they scatter.</dd></div>
+      <div><dt>Electrodes and high-voltage driver</dt><dd>Apply and remove the electric field across the plate. Switching them is the only thing that drives the cycle, so there is no compressor.</dd></div>
+      <div><dt>Magnetocaloric layer and sliding magnet*</dt><dd>The hybrid part. The magnet slides under the plate whenever the electric field is on, so this layer heats and cools in step with the ceramic and adds to its effect.</dd></div>
+      <div><dt>Fan</dt><dd>The only moving air part. It runs during phases 2 and 4 and rests while the field is switching.</dd></div>
+      <div><dt>Diverter valve</dt><dd>One flap with two positions. It sends air outside when the plate is hot and back into the room when the plate is cold.</dd></div>
+      <div><dt>Slim window vent strip*</dt><dd>A flat exhaust that sits in a window opened a crack, in place of a bulky hose. Nothing is drilled or installed, so it suits a rental.</dd></div>
+    </dl>
+    <p class="note">* Concept design choices made for this diagram: the sliding magnet with its magnetocaloric layer, and the window vent strip. Temperatures and timings are illustrative and the cycle is slowed down so each step can be seen.</p>
+  </section>
+</div>
+
+<script>
+(function () {
+  var NS = 'http://www.w3.org/2000/svg';
+  var DUR = [2, 4, 2, 4], START = [0, 2, 6, 8], TOTAL = 12, ROOM = 24.5;
+  var COOL = [111, 227, 240], HEAT = [255, 145, 71], NEUTRAL = [42, 54, 68], ROOM_AIR = [200, 183, 158], FIELD = [183, 163, 255], GREY = [140, 155, 173];
+  var $ = function (id) { return document.getElementById(id); };
+  var el = function (name, attrs, parent) {
+    var n = document.createElementNS(NS, name);
+    for (var k in attrs) n.setAttribute(k, attrs[k]);
+    parent.appendChild(n);
+    return n;
+  };
+  var clamp = function (v) { return Math.max(0, Math.min(1, v)); };
+  var ease = function (u) { return u < 0.5 ? 2 * u * u : 1 - Math.pow(-2 * u + 2, 2) / 2; };
+  var mix = function (a, b, k) {
+    k = clamp(k);
+    return 'rgb(' + Math.round(a[0] + (b[0] - a[0]) * k) + ',' + Math.round(a[1] + (b[1] - a[1]) * k) + ',' + Math.round(a[2] + (b[2] - a[2]) * k) + ')';
+  };
+
+  // ---- the cycle as functions of time ----
+  function phaseAt(t) {
+    for (var i = 3; i >= 0; i--) if (t >= START[i]) return { i: i, u: clamp((t - START[i]) / DUR[i]) };
+    return { i: 0, u: 0 };
+  }
+  function plateTemp(t) {
+    var p = phaseAt(t), u = p.u;
+    if (p.i === 0) return 24.18 + (31 - 24.18) * ease(u);
+    if (p.i === 1) return 24.8 + 6.2 * Math.exp(-3.2 * u);
+    if (p.i === 2) { var s = 24.8 + 6.2 * Math.exp(-3.2); return s + (13.8 - s) * ease(u); }
+    return ROOM - 10.7 * Math.exp(-3.5 * u);
+  }
+  // 0 = field off, dipoles scattered, magnet parked; 1 = field on, aligned, magnet engaged
+  function order(t) {
+    var p = phaseAt(t);
+    return p.i === 0 ? ease(p.u) : p.i === 1 ? 1 : p.i === 2 ? 1 - ease(p.u) : 0;
+  }
+  function fan(t) {
+    var p = phaseAt(t);
+    if (p.i === 0 || p.i === 2) return 0;
+    return clamp(Math.min(p.u / 0.1, (1 - p.u) / 0.1));
+  }
+  // 0 = valve sends air back to the room, 1 = valve sends air outside
+  function toOutside(t) {
+    var p = phaseAt(t);
+    return p.i === 0 ? ease(p.u) : p.i === 1 ? 1 : p.i === 2 ? 1 - ease(p.u) : 0;
+  }
+
+  // ---- build the moving parts ----
+  var rand = (function () { var s = 7; return function () { s = (s * 16807) % 2147483647; return s / 2147483647; }; })();
+  function arrows(parent, cols, rows, x0, y0, dx, dy, len) {
+    var list = [];
+    for (var r = 0; r < rows; r++) for (var c = 0; c < cols; c++) {
+      var g = el('g', {}, parent);
+      el('line', { x1: -len / 2, y1: 0, x2: len / 2 - 2, y2: 0, 'stroke-width': 1.6, 'stroke-linecap': 'round' }, g);
+      el('path', { d: 'M' + (len / 2 + 1) + ' 0 ' + (len / 2 - 4) + ' -3 ' + (len / 2 - 4) + ' 3z', stroke: 'none' }, g);
+      list.push({ g: g, x: x0 + c * dx, y: y0 + r * dy, a: rand() * 360 - 180, w: 1.5 + rand() * 2, ph: rand() * 6.28 });
+    }
+    return list;
+  }
+  var dipoles = arrows($('dipoles'), 12, 3, 351, 220, 19.8, 18, 13);
+  var moments = arrows($('moments'), 12, 1, 351, 296, 19.8, 0, 11);
+  for (var i = 0; i < 12; i++) el('line', { x1: 351 + i * 19.8, y1: 208, x2: 351 + i * 19.8, y2: 268, stroke: '#B7A3FF', 'stroke-width': 1 }, $('field-lines'));
+
+  var heatArrows = [];
+  [372, 416, 460, 504, 548].forEach(function (x) {
+    var g = el('g', {}, $('heat-arrows'));
+    el('line', { x1: x, y1: 193, x2: x, y2: 163, stroke: '#FF9147', 'stroke-width': 2, 'stroke-linecap': 'round' }, g);
+    el('path', { d: 'M' + x + ' 154 ' + (x - 5) + ' 164 ' + (x + 5) + ' 164z', fill: '#FF9147' }, g);
+    heatArrows.push({ g: g, x: x });
+  });
+
+  function makePath(pts) {
+    var segs = [], total = 0;
+    for (var i = 1; i < pts.length; i++) {
+      var dx = pts[i][0] - pts[i - 1][0], dy = pts[i][1] - pts[i - 1][1], len = Math.hypot(dx, dy);
+      segs.push({ x: pts[i - 1][0], y: pts[i - 1][1], dx: dx / len, dy: dy / len, len: len, at: total });
+      total += len;
+    }
+    return { segs: segs, total: total };
+  }
+  var PATH_OUT = makePath([[40, 170], [935, 170]]);
+  var PATH_ROOM = makePath([[40, 170], [648, 170], [670, 150], [670, 117], [650, 95], [40, 95]]);
+  function particles(path, target) {
+    var list = [];
+    for (var i = 0; i < 26; i++) list.push({ c: el('circle', { r: 3, opacity: 0 }, $('air')), off: i / 26 + rand() * 0.02, lane: (rand() - 0.5) * 34 });
+    return { path: path, list: list, target: target, a: 300 / path.total, b: 540 / path.total };
+  }
+  var flowOut = particles(PATH_OUT, HEAT), flowRoom = particles(PATH_ROOM, COOL);
+  function drawFlow(flow, dist, alpha) {
+    flow.list.forEach(function (p) {
+      var s = (p.off + dist / flow.path.total) % 1, d = s * flow.path.total, seg = flow.path.segs[0];
+      for (var i = 0; i < flow.path.segs.length; i++) if (d >= flow.path.segs[i].at) seg = flow.path.segs[i];
+      var along = d - seg.at;
+      p.c.setAttribute('cx', seg.x + seg.dx * along - seg.dy * p.lane);
+      p.c.setAttribute('cy', seg.y + seg.dy * along + seg.dx * p.lane);
+      p.c.setAttribute('fill', mix(ROOM_AIR, flow.target, (s - flow.a) / (flow.b - flow.a)));
+      p.c.setAttribute('opacity', alpha * clamp(Math.min(s / 0.04, (1 - s) / 0.04)));
+    });
+  }
+
+  // ---- the temperature trace ----
+  var tx = function (t) { return 70 + (t / TOTAL) * 860; };
+  var ty = function (T) { return 190 - ((T - 10) / 24) * 150; };
+  var bandNames = ['1 · Field on', '2 · Heat exhaust', '3 · Field off', '4 · Room cooling'], bands = [];
+  for (var b = 0; b < 4; b++) {
+    bands.push(el('rect', { x: tx(START[b]) + 1, y: 14, width: tx(START[b] + DUR[b]) - tx(START[b]) - 2, height: 224, rx: 6, fill: '#1B2430', opacity: 0.35 }, $('bands')));
+    el('text', { x: tx(START[b] + DUR[b] / 2), y: 32, 'text-anchor': 'middle', 'class': 't-small' }, $('bands')).textContent = bandNames[b];
+  }
+  [15, 20, 25, 30].forEach(function (T) {
+    el('line', { x1: 70, y1: ty(T), x2: 930, y2: ty(T), stroke: '#26313F', 'stroke-width': 1 }, $('grid'));
+    el('text', { x: 62, y: ty(T) + 4, 'text-anchor': 'end', 'class': 't-muted t-small' }, $('grid')).textContent = T + '°';
+  });
+  var tempColor = function (T) { return T >= ROOM ? mix(GREY, HEAT, (T - ROOM) / 3) : mix(GREY, COOL, (ROOM - T) / 4); };
+  for (var k = 0; k < 240; k++) {
+    var t0 = (k / 240) * TOTAL, t1 = ((k + 1) / 240) * TOTAL;
+    el('line', { x1: tx(t0), y1: ty(plateTemp(t0)), x2: tx(t1), y2: ty(plateTemp(Math.min(t1, TOTAL - 0.001))), stroke: tempColor(plateTemp(t0)), 'stroke-width': 2.5, 'stroke-linecap': 'round' }, $('curve'));
+  }
+  var ftPts = [];
+  for (var f = 0; f <= 240; f++) { var ft = Math.min((f / 240) * TOTAL, TOTAL - 0.001); ftPts.push(tx(ft) + ',' + (232 - 18 * order(ft))); }
+  $('field-trace').setAttribute('points', ftPts.join(' '));
+
+  // ---- render one moment of the cycle ----
+  var cards = Array.prototype.slice.call(document.querySelectorAll('.phase'));
+  var airDist = 0, fanAngle = 0, clock = 0;
+  function render(t) {
+    var p = phaseAt(t), o = order(t), T = plateTemp(t), fl = fan(t), out = toOutside(t);
+    var plate = T >= ROOM ? mix(NEUTRAL, HEAT, (T - ROOM) / 6.5) : mix(NEUTRAL, COOL, (ROOM - T) / 10.7);
+    $('ceramic').setAttribute('fill', plate);
+    $('mc-layer').setAttribute('fill', T >= ROOM ? mix(NEUTRAL, HEAT, (T - ROOM) / 11) : mix(NEUTRAL, COOL, (ROOM - T) / 18));
+    var ink = Math.abs(T - ROOM) > 4 ? '#071015' : '#EEF3F8';
+    dipoles.forEach(function (d) {
+      var a = d.a * (1 - o) - 90 * o + (1 - o) * 14 * Math.sin(clock * d.w + d.ph) + o * 2 * Math.sin(clock * 5 + d.ph);
+      d.g.setAttribute('transform', 'translate(' + d.x + ' ' + d.y + ') rotate(' + a + ')');
+      d.g.setAttribute('stroke', ink); d.g.setAttribute('fill', ink);
+    });
+    moments.forEach(function (d) {
+      var a = d.a * (1 - o) - 90 * o + (1 - o) * 10 * Math.sin(clock * d.w + d.ph);
+      d.g.setAttribute('transform', 'translate(' + d.x + ' ' + d.y + ') rotate(' + a + ')');
+      d.g.setAttribute('stroke', '#B4C0CE'); d.g.setAttribute('fill', '#B4C0CE');
+    });
+    $('field-lines').setAttribute('opacity', o * 0.4);
+    var wire = mix(GREY, FIELD, o);
+    ['wire-pos', 'wire-neg'].forEach(function (id) { $(id).setAttribute('stroke', wire); });
+    ['el-top', 'el-bot'].forEach(function (id) { $(id).setAttribute('fill', wire); });
+    $('field-state').textContent = o > 0.5 ? 'Field ON' : 'Field OFF';
+    $('field-state').style.fill = o > 0.5 ? '#B7A3FF' : '#8C9BAD';
+    $('magnet').setAttribute('transform', 'translate(0 ' + (56 * (1 - o)) + ')');
+    var ang = (180 - 90 * (1 - out)) * Math.PI / 180;
+    $('flap').setAttribute('x2', 700 + 60 * Math.cos(ang));
+    $('flap').setAttribute('y2', 140 + 60 * Math.sin(ang));
+    $('fan').setAttribute('transform', 'rotate(' + fanAngle + ' 270 170)');
+    drawFlow(flowOut, airDist, p.i === 1 ? fl : 0);
+    drawFlow(flowRoom, airDist, p.i === 3 ? fl : 0);
+    var heatAlpha = fl * clamp(Math.abs(T - ROOM) / 2.5);
+    heatArrows.forEach(function (h) {
+      h.g.setAttribute('opacity', heatAlpha);
+      h.g.setAttribute('transform', p.i === 3 ? 'rotate(180 ' + h.x + ' 177)' : '');
+    });
+    $('heat-label').setAttribute('opacity', heatAlpha);
+    $('arrow-hot').setAttribute('opacity', 0.25 + 0.75 * (p.i === 1 ? fl : 0));
+    $('arrow-cool').setAttribute('opacity', 0.25 + 0.75 * (p.i === 3 ? fl : 0));
+
+    $('c-field').textContent = o > 0.5 ? 'ON' : 'OFF';
+    $('c-dipoles').textContent = o > 0.5 ? 'Aligned' : 'Scattered';
+    $('c-magnet').textContent = o > 0.5 ? 'Engaged' : 'Parked';
+    $('c-fan').textContent = fl > 0.05 ? 'On' : 'Off';
+    $('c-valve').textContent = out > 0.5 ? 'Outside' : 'Room';
+    $('c-temp').textContent = T.toFixed(1) + '°C';
+
+    var x = tx(t), y = ty(T), col = tempColor(T);
+    $('cursor').setAttribute('x1', x); $('cursor').setAttribute('x2', x);
+    $('dot').setAttribute('cx', x); $('dot').setAttribute('cy', y); $('dot').setAttribute('fill', col);
+    var right = x > 840;
+    $('dot-label').setAttribute('x', right ? x - 12 : x + 12);
+    $('dot-label').setAttribute('y', y < 60 ? y + 22 : y - 12);
+    $('dot-label').setAttribute('text-anchor', right ? 'end' : 'start');
+    $('dot-label').textContent = T.toFixed(1) + '°C';
+    bands.forEach(function (r, i) { r.setAttribute('opacity', i === p.i ? 0.9 : 0.35); });
+    cards.forEach(function (c, i) {
+      if (i === p.i) c.setAttribute('aria-current', 'step'); else c.removeAttribute('aria-current');
+      c.querySelector('.bar').style.width = (i === p.i ? p.u * 100 : 0) + '%';
+    });
+    if (document.activeElement !== $('scrub')) $('scrub').value = t;
+  }
+
+  // ---- playback ----
+  var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var t = 2.7, playing = !reduce, stopAt = null, last = null;
+  function setPlaying(v) { playing = v; $('play').textContent = v ? 'Pause' : 'Play'; }
+  function frame(now) {
+    var dt = last === null ? 0 : Math.min(0.05, (now - last) / 1000);
+    last = now;
+    if (playing) {
+      t += dt;
+      if (stopAt !== null && t >= stopAt) { t = stopAt; stopAt = null; setPlaying(false); }
+      if (t >= TOTAL) t -= TOTAL;
+      clock += dt;
+      airDist += fan(t) * dt * 190;
+      fanAngle = (fanAngle + fan(t) * dt * 540) % 360;
+    }
+    render(t);
+    requestAnimationFrame(frame);
+  }
+  $('play').addEventListener('click', function () { stopAt = null; setPlaying(!playing); });
+  $('scrub').addEventListener('input', function () { t = Math.min(parseFloat(this.value), TOTAL - 0.001); stopAt = null; setPlaying(false); });
+  cards.forEach(function (c) {
+    c.addEventListener('click', function () {
+      var i = parseInt(c.getAttribute('data-phase'), 10);
+      // Long phases stop while the air is still flowing; short ones stop on their end state.
+      var end = START[i] + DUR[i] * (DUR[i] > 2 ? 0.88 : 0.995);
+      if (reduce) { t = end; stopAt = null; setPlaying(false); airDist += 60; return; }
+      t = START[i]; stopAt = end; setPlaying(true);
+    });
+  });
+  setPlaying(playing);
+  requestAnimationFrame(frame);
+})();
+</script>
+</body>
+</html>

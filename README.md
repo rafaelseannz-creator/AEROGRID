@@ -4,6 +4,8 @@ The control centre app for **AeroGrid**, a solid-state, non-compression air cond
 
 **Live app:** https://rafaelseannz-creator.github.io/AEROGRID/ (redeploys automatically on every push to `main`)
 
+**How it works (animated diagram):** https://rafaelseannz-creator.github.io/AEROGRID/how-it-works.html
+
 The app lets you adjust temperature and airflow, track energy use and savings against a traditional split system, see how the four-phase cooling cycle works, and manage multiple units as zones.
 
 ## Screens
